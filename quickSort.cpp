@@ -1,6 +1,7 @@
 #include <iostream>
 #include <list>
 #include <algorithm>
+#include <future>
 
 template <typename T>
 std::list<T> sequential_quick_sort(std::list<T> input)
@@ -25,6 +26,26 @@ std::list<T> sequential_quick_sort(std::list<T> input)
     result.splice(result.begin(),new_lower);
     return result;
 }
+template <typename T>
+std::list<T> parallel_quick_sort(std::list<T> input)
+{
+    if(input.empty())
+        return input;
+    std::list<T> result;
+    result.splice(result.begin(),input,input.begin());
+    T const & pivot = *result.begin();
+    auto divide_point = std::partition(input.begin(),input.end(),[&](T const &t){return t < pivot;});
+    std::list<T> lower_part;
+
+    lower_part.splice(lower_part.end(),input,input.begin(),divide_point);
+    /*递归创建线程是指数级增加，一旦判定为线程过多，就会变为同步执行
+    也就是调用get时，执行函数*/
+    std::future<std::list<T>> new_lower(std::async(&parallel_quick_sort<T>,std::move(lower_part)));
+    auto new_higher(parallel_quick_sort(std::move(input)));
+    result.splice(result.end(),new_higher);
+    result.splice(result.begin(),new_lower.get());
+    return result;
+}
 
 int main()
 {
@@ -37,7 +58,7 @@ int main()
     for(auto i:test)
         std::cout<<i<<" ";
     std::cout<<std::endl;
-    auto result = sequential_quick_sort(test);
+    auto result = parallel_quick_sort(test);
     for(auto i:result)
         std::cout<<i<<" ";
     std::cout<<std::endl;
