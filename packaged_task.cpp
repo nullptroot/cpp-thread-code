@@ -8,8 +8,8 @@
 /*packaged_task 封装一个任务  可以得到一个future对象
 什么时候使用啥时候调用future的get方法
 
-就不用子集用async来构建future了，packaged_task封装了
-async和future
+它是一个可调用对象，给用户了一个得到future的方法，可以
+自己调用，也可以加入到线程异步调用
 */
 std::mutex m;
 std::deque<std::packaged_task<void()>> tasks;

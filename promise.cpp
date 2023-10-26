@@ -5,7 +5,11 @@
 future阻塞等待数据，promise调用
 set_value方法，就表示数据设置成功
 future就可以得到数据了。
-下面的东西过于复杂，不好实现，就直接抄的书*/
+下面的东西过于复杂，不好实现，就直接抄的书
+
+一个线程阻塞在future上等待数据，另一个线程
+用相对应得promise上调用set_value使得
+future就绪得到set_value的value数据*/
 void process_connection(connection_set &connections)
 {
     while(!done(connections))
