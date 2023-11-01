@@ -72,6 +72,9 @@ std::future<void> process_login(std::string const &username,std::string const &p
 then继续执行，然后再返回future对象
 
 下面的调用链有一个函数阻塞了就会都阻塞住
+因为如果下面两个函数和服务器通信过程中
+发生阻塞，就阻塞住了，因为他要返回值后
+才会有future变量供后面调用
 
 authenticate_user 返回user_id
 request_current_info 返回user_data
@@ -101,8 +104,14 @@ std::experimental::future<void> process_login(std::string const &username,std::s
 的情况，因为有个future展开的操作（根折叠引用似的），
 就是不用担心会多层future
 
+这里就不用阻塞了，因为返回的不再是值，而是
+future，可直接返回future由后续函数调用，
+然后返回等待其future就绪即可
+
 async_authenticate_user 返回future<user_id>
 async_request_current_info 但会future<user_data>
+
+下面的代码在异步函数调用链上不会发生阻塞 好神奇
 */
 std::experimental::future<void> process_login(std::string const &username,std::string const &password)
 {
