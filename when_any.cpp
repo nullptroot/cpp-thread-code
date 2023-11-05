@@ -14,6 +14,15 @@ using ChunkResult = float;
 future集合和就绪索引（when_all返回一个future
 集合了所有要等的future），具体详情看下述代码
  没看懂，可以看书p117页*/
+
+
+ /*when_all when_any总结
+ 
+ when_all返回的future持有它等待的所有future的元组（tuple）
+ when_any返回when_any_result包含future和就绪index
+
+他们还有重载形式，接受可变参数，但都是按值传递，因此需要显示
+移动std::move*/
 template<typename Func>
 /*declval 返回一个类型的右值引用*/
 std::experimental::future<decltype(std::declval<Func>()())>
