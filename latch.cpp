@@ -1,9 +1,11 @@
+#define __cplusplus  201907L
 #include <thread>
 #include <vector>
 #include <future>
 #include <iostream>
 #include <algorithm>
-#include "latch.h"
+#include <latch>
+// #include "latch.h"
 
 /*根据要等待线程的数量来初始化线程闩latch，
 然后根据线程数量用async发起相同数量的线程
