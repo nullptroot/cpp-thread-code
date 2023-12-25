@@ -22,6 +22,11 @@ class lock_free_stack
             那么new_node->next赋值为head，继续下一轮compare_exchange_weak
             直到可以复制成功*/
             while(!head.compare_exchange_weak(new_node->next,new_node));
+            //比较交换执行下面的操作，原子执行
+            // if(new_node->next == head)
+            //     head = new_node;
+            // else
+            //     new_node->next = head;
         }
         /*这里pop并没有删除动态分配的内存，因此会发生内存泄露*/
         std::shared_ptr<T> pop()
