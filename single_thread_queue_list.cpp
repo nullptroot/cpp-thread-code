@@ -4,7 +4,15 @@
 #include <condition_variable>
 #include <unistd.h>
 #include <iostream>
-/*单线程下还可以，但是多线程下就会出现问题*/
+/*单线程下还可以，但是多线程下就会出现问题
+当使用于多线程时，我们就尝试用两个互斥分别锁住head和tail
+这样实现细粒度锁，这样就会使得push和pop两个操作可以并行执行
+因为push仅会锁住head，pop仅会锁住tail，因为是队列，这是
+理想情况，因为下面的代码push操作会锁住两个节点，pop也是，因此pop
+和push并不能并发操作，因为pop和push锁住了同一个互斥
+因此这样的设计是不行的。这和锁全局是一样的
+怎么办，看后面的代码，使用分离数据
+来实现*/
 template <typename T>
 class queue
 {
