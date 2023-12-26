@@ -40,8 +40,15 @@ class threadsafe_queue
         {
             std::lock_guard<std::mutex> lk(mut);
             data_queue.push(new_value);
+            /*这里使用了notify_one，仅有一个等待线程会被唤醒，但是如果被唤醒的线程
+            在wait_pop出现异常，那么就没有线程处理任务了，这里有三种解决方法
+            1、使用notify_all这样会唤醒所有线程，开销较大
+            2、在wait_pop捕获异常，在发出notify_one
+            3、由于可能出现异常的原因是wait_pop里的make_shared和用户自定义的copy赋值函数
+                我们可以把make_shared提前到push，也就是另容器存储shared_ptr  看2.0版本*/
             data_cond.notify_one();
         }
+        /*这里pop即使空了也不会抛出异常，和前面的safe_stack对比仅这一点不一样*/
         bool try_pop(T &value)
         {
             std::lock_guard<std::mutex> lk(mut);
@@ -51,6 +58,7 @@ class threadsafe_queue
             data_queue.pop();
             return true;
         }
+        /*这里pop即使空了也不会抛出异常，和前面的safe_stack对比仅这一点不一样*/
         std::shared_ptr<T> try_pop()
         {
             std::lock_guard<std::mutex> lk(mut);
@@ -60,6 +68,9 @@ class threadsafe_queue
             data_queue.pop();
             return res;
         }
+        /*这里的wait_pop和前面的push使用了条件变量，前面的safe_stack等待弹出，需要不断
+        调用empty判断，才能弹出，这个不用了，直接使用条件变量就行，而且条件变量在阻塞的
+        时候会释放锁，唤醒时在持有锁，增加了并发度，*/
         void wait_and_pop(T &value)
         {
             std::unique_lock<std::mutex> lk(mut);

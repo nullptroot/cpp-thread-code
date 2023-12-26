@@ -4,7 +4,9 @@
 #include <condition_variable>
 #include <unistd.h>
 #include <iostream>
-/*这里采用存储shared_ptr的方式来实现安全队列，避免了pop里出现异常*/
+/*这里采用存储shared_ptr的方式来实现安全队列，避免了pop里出现异常
+解决了1.0版的条件唤醒，然后wait_pop出现异常的情况，但是我感觉用户
+自定义的copy赋值会出现异常，还是会有这种情况出现*/
 template<typename T>
 class threadsafe_queue
 {
