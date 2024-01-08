@@ -28,7 +28,11 @@ class lock_free_stack
             // else
             //     new_node->next = head;
         }
-        /*这里pop并没有删除动态分配的内存，因此会发生内存泄露*/
+        /*这里pop并没有删除动态分配的内存，因此会发生内存泄露
+        这里虽然使用共享指针了，但是并没有释放弹出节点的资源，
+        因为智能指针只应用在了node的data成员，只要node不释放
+        data成员引用计数就不会为0，就不会释放，下述代码并没有
+        释放node，node是堆内存*/
         std::shared_ptr<T> pop()
         {
             node *old_head = head.load();
