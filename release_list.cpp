@@ -34,7 +34,10 @@ void consume_queue_items()
 
 
 比如本程序，如果没有释放序列规则，fetch_sub使用acquire的话，操作时读改写，写并不是release
-那么就不会和后一个线程构成先行关系，会出现问题的，因此有了释放序列就不会有问题了*/
+那么就不会和后一个线程构成先行关系，会出现问题的，因此有了释放序列就不会有问题了
+
+这里的释放序列应该是以一个原子变量的release操作起头，后续的所有针对此原子变量的acquire
+操作都于release操作同步，acquire和acquire之间没啥关系，全靠原子变量的原子性保持正确性*/
 int main()
 {
     std::thread a(populate_queue);

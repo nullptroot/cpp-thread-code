@@ -74,7 +74,7 @@ class lock_free_stack
                 new_counter = old_counter;
                 ++new_counter.external_count;
             } 
-            while (!head.compare_exchange_weak(old_counter,new_counter));
+            while (!head.compare_exchange_strong(old_counter,new_counter));
             old_counter.external_count = new_counter.external_count;
         }
     public:
